@@ -91,7 +91,7 @@
 <body>
   <div class="header">
     <h1>Faculté des Lettres et des Sciences Humaines</h1>
-    <p>Département de Langues et Littérature</p>
+   
     <h2>Emploi du temps - {{ $user->name }}</h2>
   </div>
   

@@ -9,7 +9,15 @@ class Cycle extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code_cycle', 'cycle', 'cycle_ar'];
+    protected $table = 'cycles';
+    protected $primaryKey = 'id';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'code_cycle',
+        'cycle',
+        'cycle_ar'
+    ];
 
     public function filieres()
     {

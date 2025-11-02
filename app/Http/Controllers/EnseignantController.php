@@ -416,7 +416,7 @@ public function downloadEmploisTemps(Request $request)
 
     $pdf = PDF::loadView('enseignants.emplois-temps-pdf', compact('user', 'emploisParJour', 'selectedSemestre'));
     
-    $semestreName = $selectedSemestre ? \App\Models\Semestre::find($selectedSemestre)->nom_semestre : 'tous';
+    $semestreName = $selectedSemestre ? \App\Models\Semistre::find($selectedSemestre)->nom_semestre : 'tous';
     
     return $pdf->download('emploi-du-temps-' . $user->name . '-' . $semestreName . '.pdf');
 }

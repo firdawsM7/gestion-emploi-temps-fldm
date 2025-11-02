@@ -9,20 +9,18 @@ class Filiere extends Model
 {
     use HasFactory;
 
+    protected $table = 'filieres';
     protected $primaryKey = 'id_filiere';
-    protected $fillable = ['nom_filiere', 'id_departement'];
-    
-    // Add this line to disable timestamps
-    public $timestamps = true;
+    public $timestamps = false;
+
+    protected $fillable = [
+        'nom_filiere',
+        'id_departement'
+    ];
 
     public function departement()
     {
         return $this->belongsTo(Departement::class, 'id_departement');
-    }
-
-    public function modules()
-    {
-        return $this->hasMany(Module::class, 'id_filiere');
     }
 
     public function groupes()
@@ -30,9 +28,14 @@ class Filiere extends Model
         return $this->hasMany(Groupe::class, 'id_filiere');
     }
 
-    public function parcours()
+    public function modules()
     {
-        return $this->hasMany(Parcours::class, 'id_filiere');
+        return $this->hasMany(Module::class, 'id_filiere');
+    }
+
+    public function seances()
+    {
+        return $this->hasMany(Seance::class, 'id_filiere');
     }
 
     public function cycles()

@@ -39,9 +39,26 @@ Route::prefix('emplois')->name('emplois.')->group(function() {
 Route::prefix('api')->group(function () {
     Route::get('/groupes', function(Request $request) {
         $filiereId = $request->query('filiere_id');
-        $groupes = Groupe::where('id_filiere', $filiereId)->get();
+        $semestreId = $request->query('semestre_id');
+        
+        $query = Groupe::where('id_filiere', $filiereId);
+        
+        if ($semestreId) {
+            $query->where('id_semestre', $semestreId);
+        }
+        
+        $groupes = $query->get();
         return response()->json($groupes);
     });
+    
+    // Route API pour charger les groupes par filière et semestre
+    Route::get('/groupes-by-filiere-semestre', [EmploiController::class, 'getGroupesByFiliereAndSemestre'])->name('api.groupes.filiere-semestre');
+    
+    // Nouvelle route pour charger les groupes par filière seule
+    Route::get('/groupes-by-filiere/{filiereId}', [EmploiController::class, 'getGroupesByFiliere'])->name('api.groupes.filiere');
+    
+    // Route pour récupérer les séances par critères
+    Route::get('/seances/{filiere_id}/{groupe_id}/{semestre_id}/{cycle_id}', [EmploiController::class, 'getSeancesByCriteria'])->name('api.seances.criteria');
 });
 
 /*------------------------------------------
@@ -65,38 +82,27 @@ Route::middleware(['auth'])->group(function () {
     });
 
     /*------------------------------------------
-    | Gestion des Emplois du Temps
+    | Gestion des Emplois du Temps (Routes principales)
     |------------------------------------------*/
     Route::prefix('emplois')->name('emplois.')->group(function() {
-            Route::get('/', [EmploiController::class, 'index'])->middleware('can:admin')->name('index');      
-               Route::get('/consulter', [EmploiController::class, 'consulter'])->name('consulter');
-        Route::get('/ajouter', [EmploiController::class, 'ajouter'])->name('ajouter');
-
-        Route::get('/gerer', [EmploiController::class, 'gerer'])->name('gerer');
-        Route::get('/ajouter', [EmploiController::class, 'ajouter'])->name('ajouter');
-        Route::post('/store', [EmploiController::class, 'store'])->name('store');
-        Route::get('/importer', [EmploiController::class, 'importer'])->name('importer');
-        Route::post('/import', [EmploiController::class, 'import'])->name('import');
-        Route::get('/generer', [EmploiController::class, 'generer'])->name('generer');
-        Route::delete('/{id}', [EmploiController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/edit', [EmploiController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [EmploiController::class, 'update'])->name('update');
+        // Consultation publique (accessible sans rôle spécifique)
+        Route::get('/', [EmploiController::class, 'index'])->name('index');
+        Route::get('/consulter', [EmploiController::class, 'consulter'])->name('consulter');
         Route::post('/rechercher', [EmploiController::class, 'rechercher'])->name('rechercher');
-
-        Route::post('/exporter', [EmploiController::class, 'exporter'])->name('exporter');
-    });
-
-    // Routes admin seulement
-    Route::middleware(['can:admin'])->group(function() {
-        Route::get('/gerer', [EmploiController::class, 'gerer'])->name('gerer');
-        Route::get('/ajouter', [EmploiController::class, 'ajouter'])->name('ajouter');
-        Route::post('/store', [EmploiController::class, 'store'])->name('store');
-        Route::get('/importer', [EmploiController::class, 'importer'])->name('importer');
-        Route::post('/import', [EmploiController::class, 'import'])->name('import');
-        Route::get('/generer', [EmploiController::class, 'generer'])->name('generer');
-        Route::delete('/{id}', [EmploiController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/edit', [EmploiController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [EmploiController::class, 'update'])->name('update');
+        
+        // Routes d'administration (admin seulement)
+        Route::middleware(['can:admin'])->group(function() {
+            Route::get('/ajouter', [EmploiController::class, 'ajouter'])->name('ajouter');
+            Route::post('/store', [EmploiController::class, 'store'])->name('store');
+            Route::get('/gerer', [EmploiController::class, 'gerer'])->name('gerer');
+            Route::delete('/{id}', [EmploiController::class, 'destroy'])->name('destroy');
+            Route::get('/{id}/edit', [EmploiController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [EmploiController::class, 'update'])->name('update');
+            Route::post('/exporter', [EmploiController::class, 'exporter'])->name('exporter');
+            Route::get('/importer', [EmploiController::class, 'importer'])->name('importer');
+            Route::post('/import', [EmploiController::class, 'import'])->name('import');
+            Route::get('/generer', [EmploiController::class, 'generer'])->name('generer');
+        });
     });
 
     /*------------------------------------------
@@ -112,9 +118,6 @@ Route::middleware(['auth'])->group(function () {
 
         // Salles
         Route::resource('salles', SalleController::class)->except(['show'])->names('salles');
-
-        // Séances
-        // Route::resource('seances', SeanceController::class)->except(['show'])->names('seances');
 
         // Modules
         Route::resource('modules', ModuleController::class)->except(['show'])->names('modules');
@@ -177,12 +180,8 @@ Route::middleware(['auth'])->group(function () {
 /*------------------------------------------
 | Routes API (protégées)
 |------------------------------------------*/
-/*------------------------------------------
-| Routes API (protégées)
-|------------------------------------------*/
 Route::prefix('api')->middleware('auth')->group(function () {
-    // Changez SalleController pour EmploiController
-    Route::get('/salles-disponibles', [EmploiController::class, 'apiDisponibilite']);
+    Route::get('/salles-disponibles', [EmploiController::class, 'apiDisponibilite'])->name('api.salles.disponibles');
 
     Route::get('/notifications/count', function(Request $request) {
         if (!Auth::check()) {
@@ -191,4 +190,20 @@ Route::prefix('api')->middleware('auth')->group(function () {
         $count = Auth::user()->unreadNotifications->count();
         return response()->json(['count' => $count]);
     })->name('api.notifications.count');
+});
+
+/*------------------------------------------
+| Routes de fallback et erreurs
+|------------------------------------------*/
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
+});
+
+// Route de test pour vérifier que l'application fonctionne
+Route::get('/health-check', function () {
+    return response()->json([
+        'status' => 'OK',
+        'message' => 'L\'application fonctionne correctement',
+        'timestamp' => now()->toDateTimeString()
+    ]);
 });

@@ -1,90 +1,142 @@
 @extends('layouts.master')
 @section('main')
-<div class="container-fluid py-4">
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center border-0 py-3">
+<div class="content">
+    <div class="card border-0" style="
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        border-left: 4px solid #5c6bc0;
+    ">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center border-0 py-3" style="
+            border-top-left-radius: 12px !important;
+            border-top-right-radius: 12px !important;
+        ">
             <div>
-                <h4 class="mb-0">
-                    <i class="fas fa-book me-2 text-primary"></i>Liste des modules
+                <h4 class="mb-0" style="color: #1a237e; font-weight: 600;">
+                    <i class="fas fa-book me-2" style="color: #5c6bc0;"></i>Gestion des Modules
                 </h4>
             </div>
-            <a href="{{ route('modules.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus-circle me-1"></i> Nouveau module
-            </a>
+            <div class="d-flex align-items-center">
+                <form action="{{ route('modules.index') }}" method="GET" class="me-2">
+                    <div class="input-group" style="width: 220px;">
+                        <input type="text" name="search" class="form-control" placeholder="Rechercher un module..." 
+                               value="{{ request('search') }}" style="border-radius: 8px 0 0 8px; font-size: 0.9rem; border-color: #e0e0e0;">
+                        <button type="submit" class="btn btn-primary" style="border-radius: 0 8px 8px 0; background-color: #5c6bc0; border: none; padding: 0.375rem 0.75rem;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <a href="{{ route('modules.create') }}" class="btn btn-primary btn-sm px-3 py-2" style="
+                    background-color: #5c6bc0;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                ">
+                    <i class="fas fa-plus-circle me-1"></i> Nouveau module
+                </a>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-4">
             @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-3" style="border-radius:8px;">
-        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-
-            <form action="{{ route('modules.index') }}" method="GET" class="mb-4">
-                <div class="input-group" style="max-width: 400px;">
-                    <input type="text" name="search" value="{{ request('search') }}" 
-                           class="form-control" placeholder="Rechercher par nom">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
+            <div class="alert alert-success alert-dismissible fade show mb-4" style="
+                border-radius: 8px;
+                background-color: #e8f5e9;
+                color: #2e7d32;
+                border: none;
+            ">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                    <thead style="background-color: #f5f7fa;">
                         <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Filière</th>
-                            <th>Semestre</th>
-                            <th class="text-center">Actions</th>
+                            <th class="ps-4" style="font-weight: 600; color: #1a237e;">ID</th>
+                            <th style="font-weight: 600; color: #1a237e;">Nom</th>
+                            <th style="font-weight: 600; color: #1a237e;">Filière</th>
+                            <th style="font-weight: 600; color: #1a237e;">Semestre</th>
+                            <th class="text-end pe-4" style="font-weight: 600; color: #1a237e;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($modules as $module)
-                        <tr>
-                            <td>{{ $module->id_module }}</td>
-                            <td><strong>{{ $module->nom_module }}</strong></td>
+                        <tr class="align-middle" style="transition: all 0.2s ease;">
+                            <td class="ps-4">{{ $module->id_module }}</td>
                             <td>
-                                <span class="badge bg-light text-dark">
+                                <strong>{{ $module->nom_module }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge py-2 px-3" style="
+                                    background-color: #e8eaf6;
+                                    color: #1a237e;
+                                    border-radius: 6px;
+                                    font-weight: 500;
+                                ">
                                     {{ $module->filiere->nom_filiere ?? 'N/A' }}
                                 </span>
                             </td>
                             <td>
-                                <span class="badge bg-info text-white">
+                                <span class="badge py-2 px-3" style="
+                                    background-color: #e3f2fd;
+                                    color: #1565c0;
+                                    border-radius: 6px;
+                                    font-weight: 500;
+                                ">
                                     S{{ $module->semestre->numero_semestre ?? $module->id_semestre }}
                                 </span>
                             </td>
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <!-- Bouton Modifier -->
-                                    <a href="{{ route('modules.edit', $module->id_module) }}" 
-                                       class="btn btn-sm btn-outline-primary px-3">
-                                        <i class="fas fa-edit me-1"></i> Modifier
-                                    </a>
+                            <td class="text-end pe-4">
+                                <a href="{{ route('modules.edit', $module->id_module) }}" 
+                                   class="btn btn-sm px-3 py-2 me-2" 
+                                   style="
+                                       background-color: #e3f2fd;
+                                       color: #1565c0;
+                                       border-radius: 8px;
+                                       font-weight: 500;
+                                       transition: all 0.3s ease;
+                                   "
+                                   onmouseover="this.style.backgroundColor='#bbdefb'" 
+                                   onmouseout="this.style.backgroundColor='#e3f2fd'">
+                                    <i class="fas fa-edit me-1"></i> Modifier
+                                </a>
 
-                                    <!-- Bouton Supprimer -->
-                                    <form action="{{ route('modules.destroy', $module->id_module) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="btn btn-sm btn-outline-danger px-3"
-                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce module ?')">
-                                            <i class="fas fa-trash-alt me-1"></i> Supprimer
-                                        </button>
-                                    </form>
-                                </div>
+                                <form action="{{ route('modules.destroy', $module->id_module) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="btn btn-sm px-3 py-2" 
+                                            style="
+                                                background-color: #ffebee;
+                                                color: #c62828;
+                                                border-radius: 8px;
+                                                font-weight: 500;
+                                                transition: all 0.3s ease;
+                                            "
+                                            onmouseover="this.style.backgroundColor='#ffcdd2'" 
+                                            onmouseout="this.style.backgroundColor='#ffebee'"
+                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce module ?')">
+                                        <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="fas fa-book fa-3x mb-3" style="opacity: 0.3;"></i>
-                                <h5>Aucun module enregistré</h5>
-                                <p>Commencez par ajouter un nouveau module</p>
-                                <a href="{{ route('modules.create') }}" class="btn btn-primary">
+                            <td colspan="5" class="text-center py-5" style="color: #5c6bc0;">
+                                <div style="font-size: 5rem; opacity: 0.3;">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <h5 class="mt-3" style="font-weight: 600;">Aucun module enregistré</h5>
+                                <p class="text-muted">Commencez par ajouter un nouveau module</p>
+                                <a href="{{ route('modules.create') }}" class="btn btn-primary mt-2 px-4 py-2" style="
+                                    background-color: #5c6bc0;
+                                    border: none;
+                                    border-radius: 8px;
+                                    font-weight: 500;
+                                ">
                                     <i class="fas fa-plus-circle me-1"></i> Ajouter un module
                                 </a>
                             </td>
@@ -104,32 +156,6 @@
 </div>
 
 <style>
-    /* Style personnalisé pour les boutons d'action */
-    .btn-outline-primary, .btn-outline-danger {
-        border-width: 1px;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-outline-primary:hover {
-        background-color: #0d6efd;
-        color: white;
-    }
-    
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: white;
-    }
-    
-    /* Espacement uniforme entre les boutons */
-    .gap-2 {
-        gap: 0.5rem;
-    }
-    
-    /* Alignement vertical des icônes */
-    .btn i {
-        vertical-align: middle;
-    }
-    
     /* Styles modernes pour la pagination */
     .pagination {
         display: flex;
@@ -144,7 +170,7 @@
     }
     
     .pagination .page-link {
-        border-radius: 6px;
+        border-radius: 8px;
         border: 1px solid #e2e8f0;
         padding: 0.5rem 0.9rem;
         color: #4a5568;
@@ -167,10 +193,10 @@
     }
     
     .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
+        background-color: #5c6bc0;
+        border-color: #5c6bc0;
         color: white;
-        box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(92, 107, 192, 0.3);
     }
     
     .pagination .page-item.disabled .page-link {

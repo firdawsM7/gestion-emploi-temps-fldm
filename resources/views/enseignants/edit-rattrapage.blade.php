@@ -49,7 +49,6 @@
 
     .sidebar-logo img {
       max-width: 160px;
-      filter: brightness(0) invert(1);
       transition: transform 0.3s ease;
     }
 
@@ -62,7 +61,7 @@
       align-items: center;
       padding: 12px 25px;
       color: rgba(255, 255, 255, 0.85);
-      font-size: 15px;
+      font-size: 18px;
       text-decoration: none;
       transition: all 0.2s ease;
       position: relative;

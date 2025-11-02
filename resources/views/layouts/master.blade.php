@@ -25,7 +25,7 @@
         --card-bg: #ffffff;
         --card-hover: #f5f5f5;
         --success-color: #4caf50;
-        --info-color: #2196f3;
+        --info-color: #3f37c9;
         --warning-color: #ff9800;
         --danger-color: #f44336;
     }

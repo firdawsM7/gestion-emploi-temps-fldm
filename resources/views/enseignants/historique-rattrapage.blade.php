@@ -49,7 +49,6 @@
 
     .sidebar-logo img {
       max-width: 160px;
-      filter: brightness(0) invert(1);
       transition: transform 0.3s ease;
     }
 
@@ -62,7 +61,7 @@
       align-items: center;
       padding: 12px 25px;
       color: rgba(255, 255, 255, 0.85);
-      font-size: 15px;
+      font-size: 18px;
       text-decoration: none;
       transition: all 0.2s ease;
       position: relative;
@@ -360,7 +359,8 @@
 <body>
 <div id="sidebar">
   <div class="sidebar-logo">
-            <img src="{{ asset('/images/USMBA (3).png') }}" width="160" alt="Logo FLDM" class="img-fluid" loading="lazy">
+    <!-- KKKKKKKKKKKKKKKKKKKKKKNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN -->
+    <img src="{{ asset('/images/USMBA (3).png') }}" width="160" alt="Logo FLDM" class="img-fluid" loading="lazy">
   </div>
   <a href="{{ route('enseignant.dashboard') }}" class="sidebar-item {{ request()->routeIs('enseignant.dashboard') ? 'active' : '' }}"><i class="fas fa-home"></i> <span>Home</span></a>
   <a href="{{ route('enseignant.emplois-temps') }}" class="sidebar-item {{ request()->routeIs('enseignant.emplois-temps') ? 'active' : '' }}"><i class="fas fa-calendar-alt"></i> <span>Emplois de temps</span></a>

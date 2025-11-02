@@ -8,35 +8,78 @@ use Illuminate\Database\Eloquent\Model;
 class Groupe extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'id_groupe'; // Assurez-vous que c'est correct
-    protected $table = 'groupes';
-    protected $fillable = ['nom_groupe']; // ou 'nom_groupe' selon ton champ réel
 
+    protected $table = 'groupes';
+    protected $primaryKey = 'id_groupe';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'nom_groupe',
+        'id_filiere',
+        'id_semestre',
+        'effectif'
+    ];
 
     public function filiere()
     {
-        return $this->belongsTo(Filiere::class, 'id_filiere');
+        return $this->belongsTo(Filiere::class, 'id_filiere', 'id_filiere');
     }
 
-// Dans Module.php
-public function semestre()
-{
-    return $this->belongsTo(Semistre::class, 'id_semestre');
-}
-    public function users()
+    public function semestre()
     {
-        return $this->belongsToMany(User::class, 'groupe_users', 'id_groupe', 'id_users')
-                    ->withPivot('annee_scolaire');
+        return $this->belongsTo(Semistre::class, 'id_semestre', 'id_semestre');
     }
 
-    public function modules()
+    // Relation avec le cycle via la filière
+    public function cycle()
     {
-        return $this->belongsToMany(Module::class, 'groupe_modele', 'id_groupe', 'id_module');
+        return $this->hasOneThrough(
+            Cycle::class,
+            Filiere::class,
+            'id_filiere', // Clé étrangère sur la table filieres
+            'id', // Clé étrangère sur la table cycles
+            'id_filiere', // Clé locale sur la table groupes
+            'id_cycle' // Clé intermédiaire sur la table filieres
+        );
     }
 
     public function seances()
     {
-        return $this->hasMany(Seance::class, 'id_groupe');
+        return $this->hasMany(Seance::class, 'id_groupe', 'id_groupe');
     }
 
+    // Méthode scope pour filtrer par cycle, filière et semestre
+    public function scopeFilter($query, $filiereId, $semestreId, $cycleId = null)
+    {
+        $query->where('id_filiere', $filiereId);
+        
+        if ($semestreId) {
+            $query->where('id_semestre', $semestreId);
+        }
+        
+        if ($cycleId) {
+            // Si vous utilisez la relation via filière
+            $query->whereHas('filiere', function($q) use ($cycleId) {
+                $q->where('id_cycle', $cycleId);
+            });
+        }
+        
+        return $query;
+    }
+
+    // Accesseur pour le nom complet du groupe
+    public function getNomCompletAttribute()
+    {
+        $nom = $this->nom_groupe;
+        
+        if ($this->filiere) {
+            $nom .= ' - ' . $this->filiere->nom_filiere;
+        }
+        
+        if ($this->semestre) {
+            $nom .= ' - ' . $this->semestre->nom_semestre;
+        }
+        
+        return $nom;
+    }
 }
